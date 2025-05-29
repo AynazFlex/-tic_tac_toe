@@ -4,6 +4,8 @@ import { useGame } from "../../store";
 
 const Title: FC = () => {
   const size = useGame(({ size }) => size);
+  const countX = useGame(({ countX }) => countX);
+  const countO = useGame(({ countO }) => countO);
 
   return (
     <>
@@ -13,11 +15,14 @@ const Title: FC = () => {
       <Divider
         sx={{
           width: "100%",
-          maxWidth: 300
+          maxWidth: 300,
         }}
       >
         <Chip label={`${size} на ${size}`} size="small" />
       </Divider>
+      <Typography>
+        x={countX} и o={countO}
+      </Typography>
     </>
   );
 };

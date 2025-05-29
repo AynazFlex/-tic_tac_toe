@@ -14,6 +14,8 @@ import { blue, red } from "@mui/material/colors";
 const GameScore: FC = () => {
   const player1 = useGame(({ player1 }) => player1);
   const player2 = useGame(({ player2 }) => player2);
+  const winX = useGame(({ winX }) => winX);
+  const winO = useGame(({ winO }) => winO);
 
   return (
     <TableContainer
@@ -39,7 +41,7 @@ const GameScore: FC = () => {
             >
               {player1} (x)
             </TableCell>
-            <TableCell>0</TableCell>
+            <TableCell>{winX}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell
@@ -50,7 +52,7 @@ const GameScore: FC = () => {
             >
               {player2} (o)
             </TableCell>
-            <TableCell>0</TableCell>
+            <TableCell>{winO}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

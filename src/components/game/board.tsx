@@ -1,61 +1,67 @@
-import { Box, Button } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import type { FC } from "react";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import CloseIcon from "@mui/icons-material/Close";
 import { useGame } from "../../store";
-import { blue, common, red } from "@mui/material/colors";
+import { blue, common, red, yellow } from "@mui/material/colors";
 
 const Board: FC = () => {
   const size = useGame(({ size }) => size);
   const board = useGame(({ board }) => board);
   const setBoard = useGame(({ setBoard }) => setBoard);
+  const winCells = useGame(({ winCells }) => winCells);
+  const isGameOver = useGame(({ isGameOver }) => isGameOver);
+  const buttonSize = 70;
 
   return (
-    <Box display="flex" gap={0.2} flexDirection="column">
-      {Array.from(Array(size)).map((_, x) => {
-        return (
-          <Box key={x} display="flex" gap={0.2}>
-            {Array.from(Array(size)).map((_, y) => {
-              const symbol = board.get(x)?.get(y);
+    <Grid
+      container
+      spacing={1}
+      columns={{ xs: size }}
+      width={buttonSize * size + (size - 1) * 8}
+    >
+      {board.map((symbol, index) => {
+        const isWinCell = winCells.includes(index);
 
-              return (
-                <Button
-                  onClick={() => symbol || setBoard(x, y)}
-                  variant="outlined"
-                  key={`${x}_${y}`}
-                  size="small"
+        return (
+          <Grid key={index}>
+            <Button
+              onClick={() => symbol || setBoard(index)}
+              variant="outlined"
+              disabled={Boolean(symbol) || isGameOver}
+              key={index}
+              size="small"
+              sx={{
+                width: buttonSize,
+                height: buttonSize,
+                padding: 0,
+                fontSize: 40,
+                color: common.black,
+                backgroundColor: isWinCell ? yellow[400] : common.white,
+              }}
+            >
+              {symbol === "x" ? (
+                <CloseIcon
                   sx={{
-                    width: 70,
-                    height: 70,
-                    padding: 0,
-                    fontSize: 40,
-                    color: common.black,
+                    color: red[500],
+                    fontSize: buttonSize - 10,
                   }}
-                >
-                  {symbol === "x" ? (
-                    <CloseIcon
-                      sx={{
-                        color: red[500],
-                        fontSize: 60,
-                      }}
-                    />
-                  ) : symbol === "o" ? (
-                    <PanoramaFishEyeIcon
-                      sx={{
-                        color: blue[500],
-                        fontSize: 60,
-                      }}
-                    />
-                  ) : (
-                    ""
-                  )}
-                </Button>
-              );
-            })}
-          </Box>
+                />
+              ) : symbol === "o" ? (
+                <PanoramaFishEyeIcon
+                  sx={{
+                    color: blue[500],
+                    fontSize: buttonSize - 10,
+                  }}
+                />
+              ) : (
+                ""
+              )}
+            </Button>
+          </Grid>
         );
       })}
-    </Box>
+    </Grid>
   );
 };
 
