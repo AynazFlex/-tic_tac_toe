@@ -1,6 +1,6 @@
 # React + TypeScript + Vite + Zustand + react hook form + MUI
 
-## Запуск локально mpn i && npm run dev
+## Запуск локально npm i && npm run dev
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
