@@ -18,6 +18,16 @@ interface IGameBoard {
   isGameOver: boolean;
 }
 
+export interface IGameResult {
+  winner: "x" | "o";
+  winCells: number[];
+  player1: string;
+  player2: string;
+  date: string;
+  board: ("x" | "o" | null)[];
+  size: number;
+}
+
 export type TypePlayersValues = Omit<IGameValues, "isAuth">;
 
 interface IGameActions {
@@ -28,7 +38,7 @@ interface IGameActions {
 }
 
 type WinnerResult = {
-  winner: "x" | "o";
+  winner: "x" | "o" | null;
   winCells: number[];
 } | null;
 
@@ -75,27 +85,40 @@ const checkWinner = (
     }
   }
 
+  if (board.every((cell) => cell !== null)) {
+    return { winner: null, winCells: [] };
+  }
+
   return null;
+};
+
+const initialValues: IGameValues & IGameBoard = {
+  player1: "",
+  player2: "",
+  isAuth: false,
+  board: [],
+  countO: 0,
+  countX: 0,
+  size: 3,
+  winX: 0,
+  winO: 0,
+  winCells: [],
+  isGameOver: false,
 };
 
 export const useGame = create<IGameValues & IGameBoard & IGameActions>(
   (set) => ({
-    isAuth: false,
-    board: [],
-    countO: 0,
-    countX: 0,
-    size: 3,
-    winX: 0,
-    winO: 0,
-    winCells: [],
-    isGameOver: false,
+    ...initialValues,
     //
     setValues: (values) =>
       set(() => ({
         ...values,
         board: Array(values.size * values.size).fill(null),
       })),
-    reset: () => set(() => ({ isAuth: false })),
+    reset: () =>
+      set(() => ({
+        ...initialValues,
+      })),
     setBoard: (index) =>
       set((state) => {
         const symbol = state.symbol === "x" ? "o" : "x";
@@ -104,6 +127,7 @@ export const useGame = create<IGameValues & IGameBoard & IGameActions>(
         //
         const board = [...state.board];
         board[index] = symbol;
+        //
         const result = checkWinner(board, state.size);
         const winner = result?.winner;
         const winCells = result?.winCells || [];
@@ -111,6 +135,25 @@ export const useGame = create<IGameValues & IGameBoard & IGameActions>(
         const winO = winner === "o" ? state.winO + 1 : state.winO;
         //
         if (result) {
+          const allGameResult = JSON.parse(
+            localStorage.getItem("gameResult") || "[]"
+          ) as IGameResult[];
+
+          localStorage.setItem(
+            "gameResult",
+            JSON.stringify([
+              ...allGameResult,
+              {
+                winner,
+                winCells,
+                player1: state.player1,
+                player2: state.player2,
+                date: new Date().toLocaleString(),
+                board: [...board],
+                size: state.size,
+              },
+            ])
+          );
           setTimeout(() => {
             set((s) => ({
               board: [...s.board].fill(null),
@@ -120,7 +163,7 @@ export const useGame = create<IGameValues & IGameBoard & IGameActions>(
               winCells: [],
               isGameOver: false,
             }));
-          }, 3000);
+          }, 1500);
         }
         //
         return {
@@ -131,7 +174,7 @@ export const useGame = create<IGameValues & IGameBoard & IGameActions>(
           winCells,
           winX,
           winO,
-          isGameOver: Boolean(winner),
+          isGameOver: Boolean(result),
         };
       }),
     resetBoard: () =>

@@ -67,11 +67,10 @@ const Login: FC = () => {
             type="number"
             slotProps={{ htmlInput: { min: 3, max: 10 } }}
             error={!!formState.errors.size}
-            helperText={formState.errors.size ? "мин 3x3 и макс 10x10" : ""}
+            helperText={formState.errors.size ? "мин 3x3" : ""}
             {...register("size", {
               required: true,
               min: 3,
-              max: 10,
               valueAsNumber: true,
             })}
           />
